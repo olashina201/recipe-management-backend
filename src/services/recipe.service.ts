@@ -1,11 +1,10 @@
 import { HttpException } from "../exceptions";
-import RecipeModel from "../models/recipe.model";
-import { IRecipe } from "../interfaces/model.interface";
+import RecipeModel, { RecipeDocument } from "../models/recipe.model";
 import { recipeSchemaValidation, updateRecipeSchemaValidation } from "../validations/recipe.validation";
 import mongoose, { Types } from "mongoose";
 import cloudinary, { UploadApiResponse } from 'cloudinary';
 
-cloudinary.config({
+cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
@@ -19,7 +18,7 @@ class RecipeService {
   | Create New Recipe
   |--------------------------------------------------------------------------
   */
-  public async createRecipe(body: IRecipe): Promise<any> {
+  public async createRecipe(body: RecipeDocument): Promise<any> {
     const { error } = recipeSchemaValidation.validate(body);
 
     if (error) {
@@ -63,7 +62,7 @@ class RecipeService {
   | Update Recipe
   |--------------------------------------------------------------------------
   */
-  public async updateRecipe(recipeId: string, payload: Partial<IRecipe>): Promise<any> {
+  public async updateRecipe(recipeId: string, payload: Partial<RecipeDocument>): Promise<any> {
     const { error } = updateRecipeSchemaValidation.validate(payload);
 
     if (error) throw new HttpException(400, 9002, 'UPDATE_RECIPE_VALIDATION_ERROR', [error.details[0].message]);

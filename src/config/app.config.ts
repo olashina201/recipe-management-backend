@@ -4,6 +4,7 @@ import ErrorMiddleware from "../middleware/error.middleware";
 import connectDB from "./db.confg";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { Routes } from "../interfaces/routes.interface";
 import { NotFoundError } from "../exceptions";
 
