@@ -12,7 +12,7 @@ class IndexRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, this.recipeController.index);
+    this.router.get(`${this.path}/test`, this.recipeController.index);
 
     this.router.get(`${this.path}`, this.recipeController.getRecipes);
     this.router.get(`${this.path}/:id`, this.recipeController.getRecipeById);
