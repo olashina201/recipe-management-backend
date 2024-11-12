@@ -41,20 +41,26 @@ class RecipeController {
 
   createRecipe = async (req: Request, res: Response) => {
     try {
-      const recipe = await this.recipeService.createRecipe(req.body);
-      res.status(201).json(recipe);
+      const file = req;
+      const recipeData = req.body;
+  
+      const result = await this.recipeService.createRecipe(recipeData, file);
+      res.status(201).json(result);
     } catch (error) {
-      res.status(400).json({ error });
+      res.status(error.status || 500).json({ message: error.message });
     }
   };
 
   updateRecipe = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
-      const updatedRecipe = await this.recipeService.updateRecipe(id, req.body);
-      res.status(200).json(updatedRecipe);
+      const file = req.file;
+      const { recipeId } = req.params;
+      const recipeData = req.body;
+  
+      const result = await this.recipeService.updateRecipe(recipeId, recipeData, file);
+      res.status(200).json(result);
     } catch (error) {
-      res.status(400).json({ error });
+      res.status(error.status || 500).json({ message: error.message });
     }
   };
 

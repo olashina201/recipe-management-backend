@@ -1,5 +1,5 @@
 import { HttpException } from "../exceptions";
-import RecipeModel, { RecipeDocument } from "../models/recipe.model";
+import RecipeModel, { IRecipe } from "../models/recipe.model";
 import { recipeSchemaValidation, updateRecipeSchemaValidation } from "../validations/recipe.validation";
 import mongoose, { Types } from "mongoose";
 import cloudinary, { UploadApiResponse } from 'cloudinary';
@@ -18,19 +18,24 @@ class RecipeService {
   | Create New Recipe
   |--------------------------------------------------------------------------
   */
-  public async createRecipe(body: RecipeDocument): Promise<any> {
+  public async createRecipe(body: IRecipe, file: any): Promise<any> {
     const { error } = recipeSchemaValidation.validate(body);
 
     if (error) {
       throw new HttpException(400, 2001, "CREATE_RECIPE_VALIDATION_ERROR", [error.details[0].message]);
     }
 
-    // Upload image to Cloudinary
-    const uploadResponse: UploadApiResponse = await cloudinary.v2.uploader.upload(body.imageUrl);
+    let imageUrl = '';
+
+    // Handle image upload if a file is provided
+    if (file) {
+      const uploadResponse: UploadApiResponse = await cloudinary.v2.uploader.upload(file.path);
+      imageUrl = uploadResponse.secure_url;
+    }
 
     const data: any = new this.recipe({
       ...body,
-      imageUrl: uploadResponse.secure_url
+      imageUrl: imageUrl || body.imageUrl, // Use imageUrl from file or body if not uploaded
     });
 
     await data.save();
@@ -62,7 +67,7 @@ class RecipeService {
   | Update Recipe
   |--------------------------------------------------------------------------
   */
-  public async updateRecipe(recipeId: string, payload: Partial<RecipeDocument>): Promise<any> {
+  public async updateRecipe(recipeId: string, payload: Partial<IRecipe>, file: any): Promise<any> {
     const { error } = updateRecipeSchemaValidation.validate(payload);
 
     if (error) throw new HttpException(400, 9002, 'UPDATE_RECIPE_VALIDATION_ERROR', [error.details[0].message]);
@@ -70,17 +75,17 @@ class RecipeService {
     const recipe = await this.recipe.findById(recipeId);
     if (!recipe) throw new HttpException(400, 1003, 'RECIPE_NOT_FOUND');
 
-    // Upload image to Cloudinary if provided
-    let updatedImageUrl = '';
-    if (payload.imageUrl) {
-      const uploadResponse: UploadApiResponse = await cloudinary.v2.uploader.upload(payload.imageUrl);
+    // Handle image upload if a new file is provided
+    let updatedImageUrl = recipe.imageUrl; // Keep the existing image if no new image is provided
+    if (file) {
+      const uploadResponse: UploadApiResponse = await cloudinary.v2.uploader.upload(file.path);
       updatedImageUrl = uploadResponse.secure_url;
     }
 
     const updatedData = await RecipeModel.findByIdAndUpdate(recipeId, {
       $set: {
         ...payload,
-        imageUrl: updatedImageUrl || recipe.imageUrl
+        imageUrl: updatedImageUrl,
       }
     }, { new: true });
 
