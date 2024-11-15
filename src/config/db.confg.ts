@@ -2,8 +2,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 const connectDB = async () => {
-  const mongoServer = await MongoMemoryServer.create();
-  const mongoUri = process.env.DATABASE_URL || mongoServer.getUri();
+  const mongoUri = process.env.DATABASE_URL as string;
   const conn = await mongoose.connect(mongoUri, {
     dbName: 'test',
     retryWrites: true,
