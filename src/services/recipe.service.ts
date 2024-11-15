@@ -55,9 +55,23 @@ class RecipeService {
   | Find All Recipes
   |--------------------------------------------------------------------------
   */
-  public async findRecipes(): Promise<any> {
-    const data: any = await this.recipe.find({}).lean();
-    return data;
+  public async findRecipes(page: number, limit: number): Promise<any> {
+    const skip = (page - 1) * limit; // Calculate how many items to skip
+    const recipes = await this.recipe
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .exec(); // Paginate the recipes
+
+    const totalCount = await this.recipe.countDocuments(); // Get total count of recipes
+    const totalPages = Math.ceil(totalCount / limit); // Calculate total pages
+
+    return {
+      recipes,
+      totalPages,
+      currentPage: page,
+      totalCount,
+    };
   }
 
   /*
