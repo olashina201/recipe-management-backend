@@ -46,7 +46,7 @@ class RecipeController {
   
       const result = await this.recipeService.createRecipe(recipeData, file);
       res.status(201).json(result);
-    } catch (error) {
+    } catch (error: any) {
       res.status(error.status || 500).json({ message: error.message });
     }
   };
@@ -59,7 +59,7 @@ class RecipeController {
   
       const result = await this.recipeService.updateRecipe(recipeId, recipeData, file);
       res.status(200).json(result);
-    } catch (error) {
+    } catch (error: any) {
       res.status(error.status || 500).json({ message: error.message });
     }
   };

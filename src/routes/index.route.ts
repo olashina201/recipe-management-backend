@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Routes } from "../interfaces/routes.interface";
 import RecipeController from "../controllers/recipe.controller";
-import upload from "@/middleware/multer";
+import upload from "../middleware/multer";
 
 class IndexRoute implements Routes {
   public path = "/recipes";
