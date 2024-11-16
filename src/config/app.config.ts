@@ -2,7 +2,6 @@ import express, { Application } from "express";
 import dotenv from "dotenv";
 import ErrorMiddleware from "../middleware/error.middleware";
 import connectDB from "./db.confg";
-import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Routes } from "../interfaces/routes.interface";
@@ -46,6 +45,5 @@ export class App {
     this.app.use(bodyParser.json());
     this.app.use(express.json({ limit: "50kb" }));
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cookieParser());
   }
 }
