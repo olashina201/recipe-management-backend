@@ -61,7 +61,8 @@ class RecipeService {
       .find()
       .skip(skip)
       .limit(limit)
-      .exec(); // Paginate the recipes
+      .sort({ createdAt: -1 })
+      .exec();
 
     const totalCount = await this.recipe.countDocuments(); // Get total count of recipes
     const totalPages = Math.ceil(totalCount / limit); // Calculate total pages
